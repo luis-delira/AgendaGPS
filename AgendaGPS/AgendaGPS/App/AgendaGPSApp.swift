@@ -19,7 +19,7 @@ struct AgendaGPSApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView() // Esta es la vista por defecto que te creó Xcode
+            ClientsView() // Esta es la vista por defecto que te creó Xcode
         }
     }
 }

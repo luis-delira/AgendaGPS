@@ -1,9 +1,11 @@
 import SwiftUI
 
-// LA VISTA (V): Lo que ve tu esposa
 struct ClientsView: View {
-    // Conectamos la vista con su ViewModel
     @StateObject private var viewModel = ClientsViewModel()
+    @State private var showingAddClient = false
+    
+    // NUEVA VARIABLE: Guarda a la clienta que seleccionamos para editar
+    @State private var clientToEdit: Client?
     
     var body: some View {
         NavigationStack {
@@ -17,14 +19,23 @@ struct ClientsView: View {
                         description: Text("Aún no has agregado ninguna clienta al sistema.")
                     )
                 } else {
-                    List(viewModel.clients) { client in
-                        VStack(alignment: .leading) {
-                            Text(client.name)
-                                .font(.headline)
-                            Text(client.phoneNumber)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                    List {
+                        ForEach(viewModel.clients) { client in
+                            // Envolvemos el texto en un Button para detectar el toque
+                            Button(action: {
+                                clientToEdit = client
+                            }) {
+                                VStack(alignment: .leading) {
+                                    Text(client.name)
+                                        .font(.headline)
+                                        .foregroundColor(.primary) // Mantiene el color original
+                                    Text(client.phoneNumber)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
                         }
+                        .onDelete(perform: viewModel.deleteClient)
                     }
                 }
             }
@@ -32,16 +43,21 @@ struct ClientsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        // Aquí abriremos el formulario más adelante
-                        print("Botón de agregar presionado")
+                        showingAddClient = true
                     }) {
                         Image(systemName: "plus")
                     }
                 }
             }
-            // Cuando la vista aparece, le decimos al ViewModel que descargue los datos
+            .sheet(isPresented: $showingAddClient) {
+                AddClientsView(viewModel: viewModel)
+            }
+            // NUEVO SHEET: Se activa si tocamos a una clienta
+            .sheet(item: $clientToEdit) { client in
+                EditClientView(viewModel: viewModel, client: client)
+            }
             .onAppear {
-                viewModel.fetchClientes()
+                viewModel.fetchClients()
             }
         }
     }

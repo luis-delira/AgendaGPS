@@ -7,6 +7,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         FirebaseApp.configure()
         print("¡Firebase configurado exitosamente!")
+        
+        NotificationManager.shared.requestAuthorization()
         return true
     }
 }
@@ -19,7 +21,7 @@ struct AgendaGPSApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ClientsView() // Esta es la vista por defecto que te creó Xcode
+            RootView() // Esta es la vista por defecto que te creó Xcode
         }
     }
 }

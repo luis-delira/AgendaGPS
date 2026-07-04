@@ -11,8 +11,9 @@ struct AddAppointmentView: View {
     @State private var date = Date()
     @State private var notes = ""
     
-    // NUEVO: Variable para el interruptor de notificación, por defecto encendido
-    @State private var recordatorioActivo = true
+    // NUEVO: Dos Toggles para controlar las notificaciones
+    @State private var avisar24h = true
+    @State private var avisar30m = true
     
     var body: some View {
         NavigationStack {
@@ -40,9 +41,11 @@ struct AddAppointmentView: View {
                     DatePicker("Date & Time", selection: $date)
                 }
                 
-                // NUEVO: La sección para activar la notificación al crear la cita
-                Section(header: Text("Notificaciones de la App")) {
-                    Toggle("Avisarme 30 min antes", isOn: $recordatorioActivo)
+                // NUEVO: Sección de Notificaciones
+                Section(header: Text("Recordatorios para ti")) {
+                    Toggle("Avisarme 24 horas antes", isOn: $avisar24h)
+                        .tint(.blue)
+                    Toggle("Avisarme 30 min antes", isOn: $avisar30m)
                         .tint(.blue)
                 }
                 
@@ -60,10 +63,8 @@ struct AddAppointmentView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        // 1. Buscamos a la clienta seleccionada
                         guard let client = clientsViewModel.clients.first(where: { $0.id == selectedClientId }) else { return }
                         
-                        // 2. Creamos la cita
                         let newAppointment = Appointment(
                             clientId: client.id ?? "",
                             clientName: client.name,
@@ -74,13 +75,10 @@ struct AddAppointmentView: View {
                             notes: notes.isEmpty ? nil : notes
                         )
                         
-                        // 3. Guardamos en Firebase
                         viewModel.addAppointment(appointment: newAppointment)
                         
-                        // 4. NUEVO: Si dejó encendido el switch, programamos la notificación
-                        if recordatorioActivo {
-                            NotificationManager.shared.programarNotificacion(para: newAppointment)
-                        }
+                        // PROGRAMAMOS LA ALERTA
+                        NotificationManager.shared.programarNotificacion(para: newAppointment, avisar24h: avisar24h, avisar30m: avisar30m)
                         
                         dismiss()
                     }

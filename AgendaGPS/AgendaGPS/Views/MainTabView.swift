@@ -8,16 +8,20 @@ struct MainTabView: View {
                     Label("Resumen", systemImage: "chart.bar.fill")
                 }
             
-            // Pestaña 1: Citas
             AppointmentsView()
                 .tabItem {
-                    Label("Citas", systemImage: "calendar")
+                    Label("Agenda", systemImage: "calendar")
                 }
             
-            // Pestaña 2: Clientas
             ClientsView()
                 .tabItem {
                     Label("Clientas", systemImage: "person.2.fill")
+                }
+            
+            // NUEVA PESTAÑA: Centro de Notificaciones
+            NotificationsView()
+                .tabItem {
+                    Label("Alertas", systemImage: "bell.badge.fill")
                 }
         }
     }

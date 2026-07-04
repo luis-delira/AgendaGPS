@@ -13,8 +13,9 @@ struct EditAppointmentView: View {
     @State private var date: Date
     @State private var notes: String
     
-    // NUEVO: Variable para controlar si queremos que suene la notificación
-    @State private var recordatorioActivo: Bool
+    // MODIFICADO: Dos variables para controlar los recordatorios
+    @State private var avisar24h: Bool
+    @State private var avisar30m: Bool
     
     init(viewModel: AppointmentsViewModel, appointment: Appointment) {
         self.viewModel = viewModel
@@ -25,7 +26,8 @@ struct EditAppointmentView: View {
         _price = State(initialValue: appointment.price)
         _date = State(initialValue: appointment.date)
         _notes = State(initialValue: appointment.notes ?? "")
-        _recordatorioActivo = State(initialValue: true) // Por defecto encendido
+        _avisar24h = State(initialValue: true)
+        _avisar30m = State(initialValue: true)
     }
     
     var body: some View {
@@ -45,14 +47,15 @@ struct EditAppointmentView: View {
                         }
                         .foregroundColor(.white)
                     }
-                    .listRowBackground(Color.green) // Fondo verde estilo WhatsApp
-                    // Se desactiva el botón si la clienta no tiene número de teléfono registrado
+                    .listRowBackground(Color.green)
                     .disabled(appointment.clientPhone == nil || appointment.clientPhone?.isEmpty == true)
                 }
                 
-                // --- NUEVO: CONFIGURACIÓN DE NOTIFICACIÓN ---
+                // --- MODIFICADO: CONFIGURACIÓN DE DOS NOTIFICACIONES ---
                 Section(header: Text("Notificaciones de la App")) {
-                    Toggle("Avisarme 30 min antes", isOn: $recordatorioActivo)
+                    Toggle("Avisarme 24 horas antes", isOn: $avisar24h)
+                        .tint(.blue)
+                    Toggle("Avisarme 30 min antes", isOn: $avisar30m)
                         .tint(.blue)
                 }
                 
@@ -97,21 +100,18 @@ struct EditAppointmentView: View {
                         var updatedAppointment = appointment
                         updatedAppointment.clientId = client.id ?? ""
                         updatedAppointment.clientName = client.name
-                        updatedAppointment.clientPhone = client.phoneNumber // Actualizamos el teléfono por si cambió
+                        updatedAppointment.clientPhone = client.phoneNumber
                         updatedAppointment.serviceName = serviceName
                         updatedAppointment.price = price ?? 0.0
                         updatedAppointment.date = date
                         updatedAppointment.notes = notes.isEmpty ? nil : notes
                         
-                        // Guardamos en Firebase
                         viewModel.updateAppointment(appointment: updatedAppointment)
                         
-                        // NUEVO: Manejo de la notificación local
-                        if recordatorioActivo {
-                            // Si está activo, programamos la alerta para 30 min antes
-                            NotificationManager.shared.programarNotificacion(para: updatedAppointment)
+                        // MODIFICADO: Actualizamos las notificaciones con las nuevas preferencias
+                        if avisar24h || avisar30m {
+                            NotificationManager.shared.programarNotificacion(para: updatedAppointment, avisar24h: avisar24h, avisar30m: avisar30m)
                         } else if let id = updatedAppointment.id {
-                            // Si lo apagó, cancelamos la alerta que estuviera programada
                             NotificationManager.shared.cancelarNotificacion(id: id)
                         }
                         

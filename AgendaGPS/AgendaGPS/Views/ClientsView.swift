@@ -2,44 +2,63 @@ import SwiftUI
 
 struct ClientsView: View {
     @StateObject private var viewModel = ClientsViewModel()
-    @State private var showingAddClient = false
     
-    // NUEVA VARIABLE: Guarda a la clienta que seleccionamos para editar
+    @State private var showingAddClient = false
     @State private var clientToEdit: Client?
     
     var body: some View {
         NavigationStack {
             Group {
                 if viewModel.isLoading && viewModel.clients.isEmpty {
-                    ProgressView("Cargando clientas...")
+                    ProgressView("Loading clients...")
                 } else if viewModel.clients.isEmpty {
                     ContentUnavailableView(
-                        "Sin Clientas",
+                        "No Clients",
                         systemImage: "person.crop.circle.badge.plus",
-                        description: Text("Aún no has agregado ninguna clienta al sistema.")
+                        description: Text("You haven't added any clients yet.")
                     )
                 } else {
                     List {
                         ForEach(viewModel.clients) { client in
-                            // Envolvemos el texto en un Button para detectar el toque
                             Button(action: {
                                 clientToEdit = client
                             }) {
-                                VStack(alignment: .leading) {
-                                    Text(client.name)
-                                        .font(.headline)
-                                        .foregroundColor(.primary) // Mantiene el color original
-                                    Text(client.phoneNumber)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
+                                HStack(spacing: 15) {
+                                    if let imageUrl = client.imageUrl, let url = URL(string: imageUrl), !imageUrl.isEmpty {
+                                        AsyncImage(url: url) { image in
+                                            image.resizable()
+                                                 .scaledToFill()
+                                        } placeholder: {
+                                            ProgressView()
+                                        }
+                                        .frame(width: 50, height: 50)
+                                        .clipShape(Circle())
+                                    } else {
+                                        Image(systemName: "person.circle.fill")
+                                            .resizable()
+                                            .frame(width: 50, height: 50)
+                                            .foregroundColor(.gray)
+                                    }
+                                    
+                                    VStack(alignment: .leading) {
+                                        Text(client.name)
+                                            .font(.headline)
+                                            .foregroundColor(.primary)
+                                        Text(client.phoneNumber)
+                                            .font(.subheadline)
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
                             }
+                            .buttonStyle(.plain)
+                            .padding(.vertical, 4)
                         }
                         .onDelete(perform: viewModel.deleteClient)
                     }
+                    .listStyle(.plain)
                 }
             }
-            .navigationTitle("Clientas")
+            .navigationTitle("Clients")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -50,9 +69,8 @@ struct ClientsView: View {
                 }
             }
             .sheet(isPresented: $showingAddClient) {
-                AddClientsView(viewModel: viewModel)
+                AddClientView(viewModel: viewModel)
             }
-            // NUEVO SHEET: Se activa si tocamos a una clienta
             .sheet(item: $clientToEdit) { client in
                 EditClientView(viewModel: viewModel, client: client)
             }

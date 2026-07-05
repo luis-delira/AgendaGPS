@@ -8,4 +8,5 @@ struct Client: Identifiable, Codable {
     var phoneNumber: String
     var email: String
     var notes: String?
+    var imageUrl: String? // NUEVO: Para guardar la URL de la foto de Hostinger
 }

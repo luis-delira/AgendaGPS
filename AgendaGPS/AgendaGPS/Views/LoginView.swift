@@ -12,7 +12,7 @@ struct LoginView: View {
         VStack(spacing: 20) {
             Image(systemName: "scissors.badge.ellipsis")
                 .font(.system(size: 80))
-                .foregroundColor(.blue)
+                .foregroundColor(Theme.accent) // Color rosa en lugar de azul
                 .padding(.bottom, 32)
             
             Text(isLoginMode ? "Bienvenida" : "Crear Cuenta")
@@ -50,7 +50,7 @@ struct LoginView: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
+                    .background(Theme.accent) // Color rosa en lugar de azul
                     .cornerRadius(12)
             }
             .padding(.top, 10)
@@ -61,7 +61,7 @@ struct LoginView: View {
                 viewModel.errorMessage = ""
             }) {
                 Text(isLoginMode ? "¿No tienes cuenta? Regístrate aquí" : "¿Ya tienes cuenta? Inicia sesión")
-                    .foregroundColor(.blue)
+                    .foregroundColor(Theme.accent) // Color rosa en lugar de azul
                     .font(.subheadline)
             }
             .padding(.top, 15)

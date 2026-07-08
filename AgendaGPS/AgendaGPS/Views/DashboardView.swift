@@ -41,7 +41,7 @@ struct DashboardView: View {
                         
                         Text("$\(gananciasDeHoy, specifier: "%.2f")")
                             .font(.system(size: 48, weight: .bold, design: .rounded))
-                            .foregroundColor(.green)
+                            .foregroundColor(.pink)
                     }
                     .padding()
                     .frame(maxWidth: .infinity)
@@ -74,7 +74,7 @@ struct DashboardView: View {
                     
                     // --- NUEVA SECCIÓN: CITAS DE MAÑANA ---
                     VStack(alignment: .leading, spacing: 16) {
-                        Text("Próximamente Mañana (\(citasDeManana.count))")
+                        Text("Próximamente mañana (\(citasDeManana.count))")
                             .font(.title2)
                             .bold()
                             .padding(.horizontal)
@@ -133,7 +133,7 @@ struct TarjetaCita: View {
             VStack(alignment: .trailing, spacing: 4) {
                 Text(appointment.date, style: .time)
                     .font(.headline)
-                    .foregroundColor(.blue)
+                    .foregroundColor(.pink)
                 Text("$\(appointment.price, specifier: "%.2f")")
                     .font(.subheadline)
                     .bold()

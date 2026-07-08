@@ -56,7 +56,7 @@ struct ClientsView: View {
                                                         .bold()
                                                         .foregroundColor(.pink)
                                                 } else {
-                                                    Text("🎁 \(birthday, format: .dateTime.day().month())")
+                                                    Text("🎁 \(birthday, format: .dateTime.day().month().year())")
                                                         .font(.caption)
                                                         .foregroundColor(.secondary)
                                                 }
@@ -72,7 +72,7 @@ struct ClientsView: View {
                     .listStyle(.plain)
                 }
             }
-            .navigationTitle("Clients")
+            .navigationTitle("Clientas")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { showingAddClient = true }) {

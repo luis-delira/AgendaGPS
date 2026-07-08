@@ -161,7 +161,7 @@ struct CustomCalendarView: UIViewRepresentable {
             }
             
             if hasAppointments {
-                return .default(color: .systemBlue, size: .medium)
+                return .default(color: .systemGray, size: .medium)
             }
             return nil
         }

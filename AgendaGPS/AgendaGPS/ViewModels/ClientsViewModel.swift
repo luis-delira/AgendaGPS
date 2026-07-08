@@ -5,7 +5,7 @@ internal import Combine
 
 class ClientsViewModel: ObservableObject {
     @Published var clients: [Client] = []
-    @Published var isLoading: Bool = true // Restored to avoid errors
+    @Published var isLoading: Bool = true
     
     private var db: Firestore {
         Firestore.firestore()
@@ -40,7 +40,7 @@ class ClientsViewModel: ObservableObject {
     // --- HOSTINGER UPLOAD FUNCTION ---
     func uploadImage(image: UIImage, completion: @escaping (String?) -> Void) {
         // 🔴 CHANGE THIS to your actual domain
-        let serverUrlString = "https://paradoxtudio.com/agenda_uploads/upload.php"
+        let serverUrlString = "https://tusitio.com/agenda_uploads/upload.php"
         
         guard let url = URL(string: serverUrlString) else {
             print("Invalid server URL")
@@ -109,8 +109,14 @@ class ClientsViewModel: ObservableObject {
     // --- FIRESTORE CRUD ---
     func addClient(client: Client) {
         do {
-            let _ = try db.collection("clients").addDocument(from: client)
+            let ref = try db.collection("clients").addDocument(from: client)
             print("Client successfully saved to Firestore!")
+            
+            // NEW: Agregamos el ID generado y programamos el cumpleaños
+            var savedClient = client
+            savedClient.id = ref.documentID
+            NotificationManager.shared.scheduleBirthdayNotification(for: savedClient)
+            
         } catch {
             print("Error saving client: \(error.localizedDescription)")
         }
@@ -121,7 +127,12 @@ class ClientsViewModel: ObservableObject {
         do {
             try db.collection("clients").document(clientId).setData(from: client)
             print("Client successfully updated!")
+            
             updateClientNameInAppointments(clientId: clientId, newName: client.name)
+            
+            // NEW: Actualizamos la notificación por si cambió de fecha de cumpleaños
+            NotificationManager.shared.scheduleBirthdayNotification(for: client)
+            
         } catch {
             print("Error updating client: \(error.localizedDescription)")
         }
@@ -144,6 +155,9 @@ class ClientsViewModel: ObservableObject {
         for index in offsets {
             let client = clients[index]
             guard let clientId = client.id else { continue }
+            
+            // NEW: Cancelamos la alerta de cumpleaños al borrar a la clienta
+            NotificationManager.shared.cancelBirthdayNotification(id: clientId)
             db.collection("clients").document(clientId).delete()
         }
     }

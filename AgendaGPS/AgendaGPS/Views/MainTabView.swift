@@ -21,7 +21,7 @@ struct MainTabView: View {
             // NUEVA PESTAÑA: Centro de Notificaciones
             NotificationsView()
                 .tabItem {
-                    Label("Alertas", systemImage: "bell.badge.fill")
+                    Label("Notificaciones", systemImage: "bell.badge.fill")
                 }
         }
     }

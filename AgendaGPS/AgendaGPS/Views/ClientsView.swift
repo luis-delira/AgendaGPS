@@ -2,9 +2,7 @@ import SwiftUI
 
 struct ClientsView: View {
     @StateObject private var viewModel = ClientsViewModel()
-    
     @State private var showingAddClient = false
-    @State private var clientToEdit: Client?
     
     var body: some View {
         NavigationStack {
@@ -20,14 +18,12 @@ struct ClientsView: View {
                 } else {
                     List {
                         ForEach(viewModel.clients) { client in
-                            Button(action: {
-                                clientToEdit = client
-                            }) {
+                            // AHORA USAMOS NAVIGATION LINK PARA IR A LOS DETALLES
+                            NavigationLink(destination: ClientDetailsView(viewModel: viewModel, client: client)) {
                                 HStack(spacing: 15) {
                                     if let imageUrl = client.imageUrl, let url = URL(string: imageUrl), !imageUrl.isEmpty {
                                         AsyncImage(url: url) { image in
-                                            image.resizable()
-                                                 .scaledToFill()
+                                            image.resizable().scaledToFill()
                                         } placeholder: {
                                             ProgressView()
                                         }
@@ -40,18 +36,36 @@ struct ClientsView: View {
                                             .foregroundColor(.gray)
                                     }
                                     
-                                    VStack(alignment: .leading) {
+                                    VStack(alignment: .leading, spacing: 4) {
                                         Text(client.name)
                                             .font(.headline)
                                             .foregroundColor(.primary)
-                                        Text(client.phoneNumber)
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
+                                        
+                                        HStack {
+                                            Text(client.phoneNumber)
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                            
+                                            if let birthday = client.birthday {
+                                                Text("•")
+                                                    .foregroundColor(.secondary)
+                                                
+                                                if client.isBirthdayToday {
+                                                    Text("🎂 Today!")
+                                                        .font(.caption)
+                                                        .bold()
+                                                        .foregroundColor(.pink)
+                                                } else {
+                                                    Text("🎁 \(birthday, format: .dateTime.day().month())")
+                                                        .font(.caption)
+                                                        .foregroundColor(.secondary)
+                                                }
+                                            }
+                                        }
                                     }
                                 }
+                                .padding(.vertical, 4)
                             }
-                            .buttonStyle(.plain)
-                            .padding(.vertical, 4)
                         }
                         .onDelete(perform: viewModel.deleteClient)
                     }
@@ -61,18 +75,13 @@ struct ClientsView: View {
             .navigationTitle("Clients")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        showingAddClient = true
-                    }) {
+                    Button(action: { showingAddClient = true }) {
                         Image(systemName: "plus")
                     }
                 }
             }
             .sheet(isPresented: $showingAddClient) {
                 AddClientView(viewModel: viewModel)
-            }
-            .sheet(item: $clientToEdit) { client in
-                EditClientView(viewModel: viewModel, client: client)
             }
             .onAppear {
                 viewModel.fetchClients()

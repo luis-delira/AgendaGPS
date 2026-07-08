@@ -2,41 +2,39 @@ import SwiftUI
 import UserNotifications
 
 struct NotificationsView: View {
-    // Observamos el manager de notificaciones
-    @StateObject private var notifManager = NotificationManager.shared
+    // Usamos @State local para almacenar las notificaciones entregadas
+    @State private var deliveredNotifications: [UNNotification] = []
     
     var body: some View {
         NavigationStack {
             Group {
-                if notifManager.pendingNotifications.isEmpty {
+                if deliveredNotifications.isEmpty {
                     ContentUnavailableView(
-                        "Sin Alertas",
+                        "Sin notificaciones recientes",
                         systemImage: "bell.slash",
-                        description: Text("No tienes recordatorios programados próximamente.")
+                        description: Text("No se han mostrado notificaciones recientemente.")
                     )
                 } else {
                     List {
-                        ForEach(notifManager.pendingNotifications, id: \.identifier) { request in
+                        // Iteramos sobre las notificaciones entregadas
+                        ForEach(deliveredNotifications, id: \.request.identifier) { notification in
                             VStack(alignment: .leading, spacing: 6) {
-                                Text(request.content.title)
+                                Text(notification.request.content.title)
                                     .font(.headline)
                                     .foregroundColor(.primary)
                                 
-                                Text(request.content.body)
+                                Text(notification.request.content.body)
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                                 
-                                // Obtenemos la fecha exacta en la que el iPhone va a sonar
-                                if let trigger = request.trigger as? UNCalendarNotificationTrigger,
-                                   let nextTrigger = trigger.nextTriggerDate() {
-                                    HStack {
-                                        Image(systemName: "clock.fill")
-                                        Text("Sonará: \(nextTrigger, style: .date) a las \(nextTrigger, style: .time)")
-                                    }
-                                    .font(.caption)
-                                    .foregroundColor(.blue)
-                                    .padding(.top, 4)
+                                // Mostramos la fecha exacta en que apareció la notificación
+                                HStack {
+                                    Image(systemName: "calendar.badge.clock")
+                                    Text("Recibida: \(notification.date, style: .date) a las \(notification.date, style: .time)")
                                 }
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                                .padding(.top, 4)
                             }
                             .padding(.vertical, 4)
                         }
@@ -44,22 +42,37 @@ struct NotificationsView: View {
                     }
                 }
             }
-            .navigationTitle("Tus Alertas")
+            .navigationTitle("Notificaciones") // Título actualizado
             .onAppear {
-                // Refrescamos la lista al abrir la pestaña
-                notifManager.fetchPendingNotifications()
+                fetchDeliveredNotifications()
+            }
+            // Opcional: Actualizar la lista al volver a la app
+            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                fetchDeliveredNotifications()
             }
         }
     }
     
-    // Función para cancelar una alerta manualmente deslizando a la izquierda
+    // Función para obtener las notificaciones que ya han aparecido
+    private func fetchDeliveredNotifications() {
+        UNUserNotificationCenter.current().getDeliveredNotifications { notifications in
+            DispatchQueue.main.async {
+                // Filtramos las de cumpleaños y ordenamos por fecha (más recientes primero)
+                self.deliveredNotifications = notifications
+                    .filter { !$0.request.identifier.contains("birthday") }
+                    .sorted { $0.date > $1.date }
+            }
+        }
+    }
+    
+    // Función para eliminar notificaciones del centro de notificaciones
     private func eliminarNotificacion(at offsets: IndexSet) {
-        let idsToRemove = offsets.map { notifManager.pendingNotifications[$0].identifier }
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: idsToRemove)
+        let idsToRemove = offsets.map { deliveredNotifications[$0].request.identifier }
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: idsToRemove)
         
-        // Refrescamos la vista
+        // Actualizamos la lista después de un breve retraso
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            notifManager.fetchPendingNotifications()
+            fetchDeliveredNotifications()
         }
     }
 }

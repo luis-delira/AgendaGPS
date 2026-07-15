@@ -48,6 +48,15 @@ class ClientsViewModel: ObservableObject {
         completion(ImageStorageManager.shared.saveImage(image))
     }
     
+    // --- TARJETA DE FIDELIDAD ---
+    // Actualiza el número de sellos (0-6) de la clienta en Firestore.
+    // El snapshot listener refresca la UI automáticamente.
+    func setLoyaltyStamps(for client: Client, stamps: Int) {
+        guard let clientId = client.id else { return }
+        let clamped = min(max(stamps, 0), Client.maxLoyaltyStamps)
+        db.collection("clients").document(clientId).updateData(["loyaltyStamps": clamped])
+    }
+
     // --- FIRESTORE CRUD ---
     func addClient(client: Client) {
         do {

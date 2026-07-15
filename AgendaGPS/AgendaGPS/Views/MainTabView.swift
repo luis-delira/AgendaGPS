@@ -23,6 +23,12 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Notificaciones", systemImage: "bell.badge.fill")
                 }
+
+            // NUEVA PESTAÑA: Perfil del usuario, al estilo WhatsApp
+            ProfileView()
+                .tabItem {
+                    Label("Perfil", systemImage: "person.crop.circle.fill")
+                }
         }
     }
 }

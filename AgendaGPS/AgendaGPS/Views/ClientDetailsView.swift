@@ -40,6 +40,33 @@ struct ClientDetailsView: View {
                             InfoRow(icon: "envelope.fill", text: email)
                         }
 
+                        // --- TARJETA DE FIDELIDAD ---
+                        HStack {
+                            Image(systemName: "seal.fill")
+                                .foregroundColor(Theme.gold)
+                                .frame(width: 24)
+                            Text("Sellos de fidelidad")
+                                .font(.body)
+                                .foregroundColor(Theme.deepRose)
+                            Spacer()
+
+                            // Mini indicadores de los 6 sellos
+                            HStack(spacing: 4) {
+                                ForEach(1...Client.maxLoyaltyStamps, id: \.self) { index in
+                                    Image(systemName: index <= currentClient.stampCount ? "heart.fill" : "heart")
+                                        .font(.caption)
+                                        .foregroundColor(index <= currentClient.stampCount ? Theme.primaryPink : Theme.lightPink)
+                                }
+                            }
+
+                            Text("\(currentClient.stampCount)/\(Client.maxLoyaltyStamps)")
+                                .font(.subheadline)
+                                .bold()
+                                .foregroundColor(Theme.gold)
+                        }
+                        .padding()
+                        .girlyCard(cornerRadius: 14)
+
                         // --- BIRTHDAY ---
                         if let birthday = currentClient.birthday {
                             HStack {

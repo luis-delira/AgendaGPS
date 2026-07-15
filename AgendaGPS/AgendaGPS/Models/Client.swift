@@ -9,9 +9,18 @@ struct Client: Identifiable, Codable {
     var notes: String?
     var imageUrl: String?
     var birthday: Date? // NEW: Birthday property
+    var loyaltyStamps: Int? // NEW: sellos de la tarjeta de fidelidad (0-6)
 }
 
 extension Client {
+    // Número máximo de sellos para ganar el premio
+    static let maxLoyaltyStamps = 6
+
+    // Sellos actuales (0 si la clienta aún no tiene tarjeta)
+    var stampCount: Int {
+        loyaltyStamps ?? 0
+    }
+
     // Helper to check if today is their birthday
     var isBirthdayToday: Bool {
         guard let birthday = birthday else { return false }

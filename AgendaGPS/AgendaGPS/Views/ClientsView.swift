@@ -3,6 +3,7 @@ import SwiftUI
 struct ClientsView: View {
     @StateObject private var viewModel = ClientsViewModel()
     @State private var showingAddClient = false
+    @State private var loyaltyClient: Client? // Clienta cuya tarjeta de fidelidad se muestra
 
     var body: some View {
         NavigationStack {
@@ -64,6 +65,27 @@ struct ClientsView: View {
 
                                         Spacer()
 
+                                        // Badge de la tarjeta de fidelidad: muestra los sellos
+                                        // y abre la vista de fidelidad al tocarlo
+                                        Button(action: { loyaltyClient = client }) {
+                                            HStack(spacing: 4) {
+                                                Image(systemName: "seal.fill")
+                                                Text("\(client.stampCount)/\(Client.maxLoyaltyStamps)")
+                                            }
+                                            .font(.caption)
+                                            .bold()
+                                            .foregroundColor(Theme.gold)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 6)
+                                            .background(
+                                                Capsule().fill(Theme.blush)
+                                            )
+                                            .overlay(
+                                                Capsule().stroke(Theme.goldGradient, lineWidth: 1)
+                                            )
+                                        }
+                                        .buttonStyle(.borderless)
+
                                         Image(systemName: "chevron.right")
                                             .font(.caption)
                                             .foregroundColor(Theme.lightPink)
@@ -93,6 +115,9 @@ struct ClientsView: View {
             }
             .sheet(isPresented: $showingAddClient) {
                 AddClientView(viewModel: viewModel)
+            }
+            .sheet(item: $loyaltyClient) { client in
+                LoyaltyCardView(viewModel: viewModel, client: client)
             }
             .onAppear {
                 viewModel.fetchClients()

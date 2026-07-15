@@ -16,70 +16,88 @@ struct AppointmentsView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                
-                // --- CALENDARIO MÁGICO EN ESPAÑOL ---
-                CustomCalendarView(selectedDate: $selectedDate, appointments: viewModel.appointments)
-                    .background(Color(UIColor.secondarySystemBackground))
-                    .cornerRadius(16)
-                    .padding(.horizontal)
-                    .padding(.top, 10)
-                    .padding(.bottom, 10)
-                
-                // --- LISTA DE CITAS ---
-                Group {
-                    if viewModel.isLoading && viewModel.appointments.isEmpty {
-                        Spacer()
-                        ProgressView("Cargando agenda...")
-                        Spacer()
-                    } else if citasFiltradas.isEmpty {
-                        ContentUnavailableView(
-                            "Día Libre",
-                            systemImage: "calendar.badge.minus",
-                            description: Text("No tienes citas programadas para este día.")
-                        )
-                    } else {
-                        List {
-                            ForEach(citasFiltradas) { appointment in
-                                Button(action: {
-                                    appointmentToEdit = appointment
-                                }) {
-                                    VStack(alignment: .leading, spacing: 6) {
-                                        Text(appointment.clientName)
-                                            .font(.headline)
-                                            .foregroundColor(.primary)
-                                        
+            ZStack {
+                GirlyBackground()
+
+                VStack(spacing: 0) {
+
+                    // --- CALENDARIO MÁGICO EN ESPAÑOL ---
+                    CustomCalendarView(selectedDate: $selectedDate, appointments: viewModel.appointments)
+                        .padding(8)
+                        .girlyCard(cornerRadius: 20)
+                        .padding(.horizontal)
+                        .padding(.top, 10)
+                        .padding(.bottom, 10)
+
+                    // --- LISTA DE CITAS ---
+                    Group {
+                        if viewModel.isLoading && viewModel.appointments.isEmpty {
+                            Spacer()
+                            ProgressView("Cargando agenda...")
+                                .tint(Theme.primaryPink)
+                            Spacer()
+                        } else if citasFiltradas.isEmpty {
+                            ContentUnavailableView(
+                                "Día Libre",
+                                systemImage: "calendar.badge.minus",
+                                description: Text("No tienes citas programadas para este día.")
+                            )
+                            .foregroundColor(Theme.softText)
+                        } else {
+                            List {
+                                ForEach(citasFiltradas) { appointment in
+                                    Button(action: {
+                                        appointmentToEdit = appointment
+                                    }) {
                                         HStack {
-                                            Text(appointment.serviceName)
-                                                .foregroundColor(.primary)
-                                            Spacer()
-                                            Text("$\(appointment.price, specifier: "%.2f")")
-                                                .bold()
-                                                .foregroundColor(.primary)
+                                            RoundedRectangle(cornerRadius: 4)
+                                                .fill(Theme.pinkGradient)
+                                                .frame(width: 5)
+
+                                            VStack(alignment: .leading, spacing: 6) {
+                                                Text(appointment.clientName)
+                                                    .font(.headline)
+                                                    .foregroundColor(Theme.deepRose)
+
+                                                HStack {
+                                                    Text(appointment.serviceName)
+                                                        .foregroundColor(Theme.softText)
+                                                    Spacer()
+                                                    Text("$\(appointment.price, specifier: "%.2f")")
+                                                        .bold()
+                                                        .foregroundColor(Theme.gold)
+                                                }
+                                                .font(.subheadline)
+
+                                                HStack {
+                                                    Image(systemName: "clock")
+                                                    Text(appointment.date, style: .time)
+                                                }
+                                                .font(.caption)
+                                                .foregroundColor(Theme.primaryPink)
+                                            }
+                                            .padding(.leading, 4)
                                         }
-                                        .font(.subheadline)
-                                        
-                                        HStack {
-                                            Image(systemName: "clock")
-                                            Text(appointment.date, style: .time)
-                                        }
-                                        .font(.caption)
-                                        .foregroundColor(.blue)
+                                        .padding()
+                                        .girlyCard()
                                     }
-                                    .padding(.vertical, 4)
+                                    .listRowBackground(Color.clear)
+                                    .listRowSeparator(.hidden)
+                                    .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                                }
+                                .onDelete { offsets in
+                                    for index in offsets {
+                                        guard let id = citasFiltradas[index].id else { continue }
+                                        viewModel.deleteAppointmentById(id: id)
+                                    }
                                 }
                             }
-                            .onDelete { offsets in
-                                for index in offsets {
-                                    guard let id = citasFiltradas[index].id else { continue }
-                                    viewModel.deleteAppointmentById(id: id)
-                                }
-                            }
+                            .listStyle(.plain)
+                            .scrollContentBackground(.hidden)
                         }
-                        .listStyle(.plain)
                     }
+                    .frame(maxHeight: .infinity)
                 }
-                .frame(maxHeight: .infinity)
             }
             .navigationTitle("Agenda")
             .toolbar {
@@ -87,7 +105,8 @@ struct AppointmentsView: View {
                     Button(action: {
                         showingAddAppointment = true
                     }) {
-                        Image(systemName: "plus")
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(Theme.primaryPink)
                     }
                 }
             }
@@ -116,7 +135,9 @@ struct CustomCalendarView: UIViewRepresentable {
         calendarView.locale = Locale(identifier: "es_MX")
         
         calendarView.fontDesign = .rounded
-        
+        // Tinte rosa para la selección y acentos del calendario
+        calendarView.tintColor = Theme.uiAccent
+
         let selection = UICalendarSelectionSingleDate(delegate: context.coordinator)
         selection.selectedDate = Calendar.current.dateComponents([.year, .month, .day], from: selectedDate)
         calendarView.selectionBehavior = selection
@@ -161,7 +182,7 @@ struct CustomCalendarView: UIViewRepresentable {
             }
             
             if hasAppointments {
-                return .default(color: .systemGray, size: .medium)
+                return .default(color: Theme.uiAccent, size: .medium)
             }
             return nil
         }

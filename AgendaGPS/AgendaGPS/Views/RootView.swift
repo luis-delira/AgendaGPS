@@ -22,6 +22,7 @@ struct RootView: View {
         // ESTILOS GLOBALES DE SWIFTUI:
         .tint(Theme.accent) // Cambia el color por defecto a nuestro rosa en todos los botones y enlaces
         .fontDesign(.rounded) // Hace que el texto de toda la app sea redondeado y más suave visualmente
+        .preferredColorScheme(.light) // Mantiene el look "girly" blanco/rosa consistente
     }
 }
 

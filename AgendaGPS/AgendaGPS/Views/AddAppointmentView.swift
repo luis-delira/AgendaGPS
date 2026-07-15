@@ -44,16 +44,18 @@ struct AddAppointmentView: View {
                 // NUEVO: Sección de Notificaciones
                 Section(header: Text("Recordatorios para ti")) {
                     Toggle("Avisarme 24 horas antes", isOn: $avisar24h)
-                        .tint(.blue)
+                        .tint(Theme.primaryPink)
                     Toggle("Avisarme 30 min antes", isOn: $avisar30m)
-                        .tint(.blue)
+                        .tint(Theme.primaryPink)
                 }
-                
+
                 Section(header: Text("Notes")) {
                     TextEditor(text: $notes)
                         .frame(height: 80)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(GirlyBackground())
             .navigationTitle("New Appointment")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

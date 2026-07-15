@@ -33,9 +33,10 @@ struct AddClientView: View {
                                     Image(systemName: "camera.circle.fill")
                                         .resizable()
                                         .frame(width: 80, height: 80)
-                                        .foregroundColor(.blue)
-                                    Text("Add Photo")
+                                        .foregroundColor(Theme.primaryPink)
+                                    Text("Agregar foto")
                                         .font(.caption)
+                                        .foregroundColor(Theme.softText)
                                 }
                             }
                         }
@@ -64,6 +65,8 @@ struct AddClientView: View {
                         .frame(height: 100)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(GirlyBackground())
             .navigationTitle("New Client")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

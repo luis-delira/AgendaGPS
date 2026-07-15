@@ -7,38 +7,56 @@ struct NotificationsView: View {
     
     var body: some View {
         NavigationStack {
-            Group {
-                if deliveredNotifications.isEmpty {
-                    ContentUnavailableView(
-                        "Sin notificaciones recientes",
-                        systemImage: "bell.slash",
-                        description: Text("No se han mostrado notificaciones recientemente.")
-                    )
-                } else {
-                    List {
-                        // Iteramos sobre las notificaciones entregadas
-                        ForEach(deliveredNotifications, id: \.request.identifier) { notification in
-                            VStack(alignment: .leading, spacing: 6) {
-                                Text(notification.request.content.title)
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                
-                                Text(notification.request.content.body)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                
-                                // Mostramos la fecha exacta en que apareció la notificación
-                                HStack {
-                                    Image(systemName: "calendar.badge.clock")
-                                    Text("Recibida: \(notification.date, style: .date) a las \(notification.date, style: .time)")
+            ZStack {
+                GirlyBackground()
+
+                Group {
+                    if deliveredNotifications.isEmpty {
+                        ContentUnavailableView(
+                            "Sin notificaciones recientes",
+                            systemImage: "bell.slash",
+                            description: Text("No se han mostrado notificaciones recientemente.")
+                        )
+                        .foregroundColor(Theme.softText)
+                    } else {
+                        List {
+                            // Iteramos sobre las notificaciones entregadas
+                            ForEach(deliveredNotifications, id: \.request.identifier) { notification in
+                                HStack(alignment: .top, spacing: 12) {
+                                    Image(systemName: "bell.badge.fill")
+                                        .foregroundColor(Theme.primaryPink)
+                                        .font(.title3)
+                                        .padding(.top, 2)
+
+                                    VStack(alignment: .leading, spacing: 6) {
+                                        Text(notification.request.content.title)
+                                            .font(.headline)
+                                            .foregroundColor(Theme.deepRose)
+
+                                        Text(notification.request.content.body)
+                                            .font(.subheadline)
+                                            .foregroundColor(Theme.softText)
+
+                                        // Mostramos la fecha exacta en que apareció la notificación
+                                        HStack {
+                                            Image(systemName: "calendar.badge.clock")
+                                            Text("Recibida: \(notification.date, style: .date) a las \(notification.date, style: .time)")
+                                        }
+                                        .font(.caption)
+                                        .foregroundColor(Theme.gold)
+                                        .padding(.top, 4)
+                                    }
                                 }
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                                .padding(.top, 4)
+                                .padding()
+                                .girlyCard()
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                             }
-                            .padding(.vertical, 4)
+                            .onDelete(perform: eliminarNotificacion)
                         }
-                        .onDelete(perform: eliminarNotificacion)
+                        .listStyle(.plain)
+                        .scrollContentBackground(.hidden)
                     }
                 }
             }

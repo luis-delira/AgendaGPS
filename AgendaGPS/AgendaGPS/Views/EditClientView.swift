@@ -48,8 +48,8 @@ struct EditClientView: View {
                                 .frame(width: 100, height: 100).clipShape(Circle())
                             } else {
                                 VStack {
-                                    Image(systemName: "camera.circle.fill").resizable().frame(width: 80, height: 80).foregroundColor(.blue)
-                                    Text("Change Photo").font(.caption)
+                                    Image(systemName: "camera.circle.fill").resizable().frame(width: 80, height: 80).foregroundColor(Theme.primaryPink)
+                                    Text("Cambiar foto").font(.caption).foregroundColor(Theme.softText)
                                 }
                             }
                         }
@@ -81,6 +81,8 @@ struct EditClientView: View {
                     TextEditor(text: $notes).frame(height: 100)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(GirlyBackground())
             .navigationTitle("Edit Client")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

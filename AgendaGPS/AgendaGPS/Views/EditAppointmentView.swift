@@ -54,9 +54,9 @@ struct EditAppointmentView: View {
                 // --- MODIFICADO: CONFIGURACIÓN DE DOS NOTIFICACIONES ---
                 Section(header: Text("Notificaciones de la App")) {
                     Toggle("Avisarme 24 horas antes", isOn: $avisar24h)
-                        .tint(.blue)
+                        .tint(Theme.primaryPink)
                     Toggle("Avisarme 30 min antes", isOn: $avisar30m)
-                        .tint(.blue)
+                        .tint(Theme.primaryPink)
                 }
                 
                 Section(header: Text("Client")) {
@@ -86,6 +86,8 @@ struct EditAppointmentView: View {
                         .frame(height: 80)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(GirlyBackground())
             .navigationTitle("Detalles Cita")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

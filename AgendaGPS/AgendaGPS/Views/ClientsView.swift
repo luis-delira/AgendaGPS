@@ -31,22 +31,8 @@ struct ClientsView: View {
                                     .opacity(0)
 
                                     HStack(spacing: 15) {
-                                        if let imageUrl = client.imageUrl, let url = URL(string: imageUrl), !imageUrl.isEmpty {
-                                            AsyncImage(url: url) { image in
-                                                image.resizable().scaledToFill()
-                                            } placeholder: {
-                                                ProgressView()
-                                            }
-                                            .frame(width: 55, height: 55)
-                                            .clipShape(Circle())
+                                        ClientImageView(imageUrl: client.imageUrl, size: 55)
                                             .overlay(Circle().stroke(Theme.goldGradient, lineWidth: 2))
-                                        } else {
-                                            Image(systemName: "person.circle.fill")
-                                                .resizable()
-                                                .frame(width: 55, height: 55)
-                                                .foregroundColor(Theme.lightPink)
-                                                .overlay(Circle().stroke(Theme.goldGradient, lineWidth: 2))
-                                        }
 
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(client.name)

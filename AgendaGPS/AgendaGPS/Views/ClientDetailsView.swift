@@ -20,24 +20,9 @@ struct ClientDetailsView: View {
                 VStack(spacing: 24) {
 
                     // --- PROFILE IMAGE con aro dorado ---
-                    Group {
-                        if let imageUrl = currentClient.imageUrl, let url = URL(string: imageUrl), !imageUrl.isEmpty {
-                            AsyncImage(url: url) { image in
-                                image.resizable().scaledToFill()
-                            } placeholder: {
-                                ProgressView()
-                            }
-                            .frame(width: 130, height: 130)
-                            .clipShape(Circle())
-                        } else {
-                            Image(systemName: "person.circle.fill")
-                                .resizable()
-                                .frame(width: 130, height: 130)
-                                .foregroundColor(Theme.lightPink)
-                        }
-                    }
-                    .overlay(Circle().stroke(Theme.goldGradient, lineWidth: 3))
-                    .shadow(color: Theme.primaryPink.opacity(0.3), radius: 10, x: 0, y: 5)
+                    ClientImageView(imageUrl: currentClient.imageUrl, size: 130)
+                        .overlay(Circle().stroke(Theme.goldGradient, lineWidth: 3))
+                        .shadow(color: Theme.primaryPink.opacity(0.3), radius: 10, x: 0, y: 5)
 
                     // --- NAME ---
                     Text(currentClient.name)

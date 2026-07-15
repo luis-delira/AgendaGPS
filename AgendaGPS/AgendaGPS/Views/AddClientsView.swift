@@ -80,13 +80,13 @@ struct AddClientView: View {
                         isUploading = true
                         
                         if let image = selectedImage {
-                            viewModel.uploadImage(image: image) { uploadedUrl in
+                            viewModel.saveImageLocally(image: image) { savedFilename in
                                 let newClient = Client(
                                     name: name,
                                     phoneNumber: phoneNumber,
                                     email: email,
                                     notes: notes.isEmpty ? nil : notes,
-                                    imageUrl: uploadedUrl
+                                    imageUrl: savedFilename
                                 )
                                 viewModel.addClient(client: newClient)
                                 isUploading = false

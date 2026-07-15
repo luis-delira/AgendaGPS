@@ -43,9 +43,8 @@ struct EditClientView: View {
                         PhotosPicker(selection: $selectedItem, matching: .images, photoLibrary: .shared()) {
                             if let selectedImage {
                                 Image(uiImage: selectedImage).resizable().scaledToFill().frame(width: 100, height: 100).clipShape(Circle())
-                            } else if let imageUrl = existingImageUrl, let url = URL(string: imageUrl) {
-                                AsyncImage(url: url) { image in image.resizable().scaledToFill() } placeholder: { ProgressView() }
-                                .frame(width: 100, height: 100).clipShape(Circle())
+                            } else if let imageUrl = existingImageUrl, !imageUrl.isEmpty {
+                                ClientImageView(imageUrl: imageUrl, size: 100)
                             } else {
                                 VStack {
                                     Image(systemName: "camera.circle.fill").resizable().frame(width: 80, height: 80).foregroundColor(Theme.primaryPink)
@@ -101,8 +100,8 @@ struct EditClientView: View {
                         updatedClient.birthday = includeBirthday ? birthday : nil // Update birthday
                         
                         if let image = selectedImage {
-                            viewModel.uploadImage(image: image) { uploadedUrl in
-                                updatedClient.imageUrl = uploadedUrl
+                            viewModel.saveImageLocally(image: image, replacing: existingImageUrl) { savedFilename in
+                                updatedClient.imageUrl = savedFilename
                                 viewModel.updateClient(client: updatedClient)
                                 isUploading = false
                                 dismiss()

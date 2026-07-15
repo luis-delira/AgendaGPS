@@ -37,73 +37,15 @@ class ClientsViewModel: ObservableObject {
         }
     }
     
-    // --- HOSTINGER UPLOAD FUNCTION ---
-    func uploadImage(image: UIImage, completion: @escaping (String?) -> Void) {
-        // 🔴 CHANGE THIS to your actual domain
-        let serverUrlString = "https://tusitio.com/agenda_uploads/upload.php"
-        
-        guard let url = URL(string: serverUrlString) else {
-            print("Invalid server URL")
-            completion(nil)
-            return
+    // --- ALMACENAMIENTO LOCAL DE IMÁGENES ---
+    // Guarda la foto en el dispositivo y devuelve el nombre del archivo,
+    // que se almacena en el campo imageUrl de Firestore.
+    // Si la clienta tenía una foto local anterior, la borramos para no acumular archivos.
+    func saveImageLocally(image: UIImage, replacing oldImageUrl: String? = nil, completion: @escaping (String?) -> Void) {
+        if let old = oldImageUrl, !old.isEmpty, !old.hasPrefix("http") {
+            ImageStorageManager.shared.deleteImage(named: old)
         }
-        
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            completion(nil)
-            return
-        }
-        
-        let boundary = "Boundary-\(UUID().uuidString)"
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-        
-        var body = Data()
-        let filename = "\(UUID().uuidString).jpg"
-        
-        body.append("--\(boundary)\r\n".data(using: .utf8)!)
-        body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
-        body.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-        body.append(imageData)
-        body.append("\r\n".data(using: .utf8)!)
-        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
-        
-        request.httpBody = body
-        
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error uploading to Hostinger: \(error.localizedDescription)")
-                DispatchQueue.main.async { completion(nil) }
-                return
-            }
-            
-            guard let data = data else {
-                print("No data received from server")
-                DispatchQueue.main.async { completion(nil) }
-                return
-            }
-            
-            do {
-                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let imageUrl = json["url"] as? String {
-                    DispatchQueue.main.async {
-                        completion(imageUrl)
-                    }
-                } else {
-                    if let plainTextResponse = String(data: data, encoding: .utf8), plainTextResponse.hasPrefix("http") {
-                        DispatchQueue.main.async { completion(plainTextResponse.trimmingCharacters(in: .whitespacesAndNewlines)) }
-                    } else {
-                        DispatchQueue.main.async { completion(nil) }
-                    }
-                }
-            } catch {
-                if let plainTextResponse = String(data: data, encoding: .utf8), plainTextResponse.hasPrefix("http") {
-                    DispatchQueue.main.async { completion(plainTextResponse.trimmingCharacters(in: .whitespacesAndNewlines)) }
-                } else {
-                    DispatchQueue.main.async { completion(nil) }
-                }
-            }
-        }.resume()
+        completion(ImageStorageManager.shared.saveImage(image))
     }
     
     // --- FIRESTORE CRUD ---
@@ -158,6 +100,12 @@ class ClientsViewModel: ObservableObject {
             
             // NEW: Cancelamos la alerta de cumpleaños al borrar a la clienta
             NotificationManager.shared.cancelBirthdayNotification(id: clientId)
+
+            // Borramos también su foto del almacenamiento local (si no es una URL antigua)
+            if let imageUrl = client.imageUrl, !imageUrl.isEmpty, !imageUrl.hasPrefix("http") {
+                ImageStorageManager.shared.deleteImage(named: imageUrl)
+            }
+
             db.collection("clients").document(clientId).delete()
         }
     }

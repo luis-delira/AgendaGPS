@@ -1,155 +1,157 @@
 # 💅 AgendaGPS
 
-**Tu agenda de belleza.** AgendaGPS es una app para iOS hecha con SwiftUI para que profesionales de la belleza (uñas, pestañas, estética, etc.) administren sus clientas, citas, recordatorios y tarjetas de fidelidad desde el iPhone.
+**Your beauty appointment book.** AgendaGPS is an iOS app built with SwiftUI that helps beauty professionals (nails, lashes, skincare, etc.) manage their clients, appointments, reminders and loyalty cards right from their iPhone.
+
+> The app's interface is in Spanish.
 
 ![Swift](https://img.shields.io/badge/Swift-5-F05138?logo=swift&logoColor=white)
 ![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-0D96F6?logo=swift&logoColor=white)
 ![iOS](https://img.shields.io/badge/iOS-26.5%2B-000000?logo=apple&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Backend-Firebase-FFCA28?logo=firebase&logoColor=black)
-![Arquitectura](https://img.shields.io/badge/Arquitectura-MVVM-8A2BE2)
+![Architecture](https://img.shields.io/badge/Architecture-MVVM-8A2BE2)
 
-<!-- Agrega aquí capturas de pantalla, por ejemplo:
+<!-- Add screenshots here, for example:
 <p align="center">
-  <img src="docs/screenshots/resumen.png" width="200" />
+  <img src="docs/screenshots/dashboard.png" width="200" />
   <img src="docs/screenshots/agenda.png" width="200" />
-  <img src="docs/screenshots/clientas.png" width="200" />
-  <img src="docs/screenshots/fidelidad.png" width="200" />
+  <img src="docs/screenshots/clients.png" width="200" />
+  <img src="docs/screenshots/loyalty.png" width="200" />
 </p>
 -->
 
 ---
 
-## ✨ Funcionalidades
+## ✨ Features
 
-### 📊 Resumen (Dashboard)
-- Ganancias estimadas del día, calculadas a partir del precio de las citas de hoy.
-- Lista de citas de **hoy** y de **mañana** de un vistazo.
+### 📊 Dashboard (Resumen)
+- Estimated earnings for the day, calculated from the price of today's appointments.
+- **Today's** and **tomorrow's** appointments at a glance.
 
 ### 📅 Agenda
-- Crear, editar y eliminar citas (cliente, servicio, precio, fecha/hora y notas).
-- Recordatorios locales configurables por cita: **24 horas antes** y/o **30 minutos antes**.
-- Botón **"Recordar por WhatsApp"** que abre WhatsApp con un mensaje de recordatorio ya redactado para la clienta.
+- Create, edit and delete appointments (client, service, price, date/time and notes).
+- Configurable local reminders per appointment: **24 hours before** and/or **30 minutes before**.
+- **"Remind via WhatsApp"** button that opens WhatsApp with a pre-written reminder message for the client.
 
-### 👩 Clientas
-- Directorio de clientas con nombre, teléfono, correo, notas y foto de perfil.
-- Fecha de cumpleaños opcional, con indicador **🎂 ¡Hoy!** y notificación anual a las 9:00 AM.
-- Deslizar para eliminar.
-- Si cambias el nombre de una clienta, se actualiza automáticamente en todas sus citas.
+### 👩 Clients (Clientas)
+- Client directory with name, phone, email, notes and profile photo.
+- Optional birthday, with a **🎂 Today!** badge and a yearly notification at 9:00 AM.
+- Swipe to delete.
+- Renaming a client automatically updates the name on all of their appointments.
 
-### 🎁 Tarjeta de fidelidad
-- Tarjeta digital de **6 sellos** por clienta.
-- Agregar o quitar sellos y canjear el premio para reiniciar la tarjeta.
+### 🎁 Loyalty card (Fidelidad)
+- Digital **6-stamp** loyalty card per client.
+- Add or remove stamps, and redeem the reward to reset the card.
 
-### 🔔 Notificaciones
-- Vista con todas las alertas programadas (citas y cumpleaños), ordenadas por fecha.
+### 🔔 Notifications (Notificaciones)
+- List of every scheduled alert (appointments and birthdays), sorted by date.
 
-### 👤 Perfil
-- Inicio de sesión y registro con correo y contraseña.
-- Nombre visible y foto de perfil editables.
-- Cerrar sesión.
+### 👤 Profile (Perfil)
+- Email and password sign-in and sign-up.
+- Editable display name and profile photo.
+- Sign out.
 
-### 🎨 Diseño
-- Sistema de diseño propio en rosa, dorado y blanco (`Theme.swift`), con tarjetas, botones y fondos reutilizables.
-- Compatible con el estilo *Liquid Glass* de iOS 26.
+### 🎨 Design
+- Custom pink, gold and white design system (`Theme.swift`) with reusable cards, buttons and backgrounds.
+- Compatible with iOS 26's *Liquid Glass* style.
 
 ---
 
-## 🛠️ Tecnologías
+## 🛠️ Tech stack
 
-| Área | Tecnología |
+| Area | Technology |
 |---|---|
-| Lenguaje | Swift 5 |
+| Language | Swift 5 |
 | UI | SwiftUI, PhotosUI |
-| Arquitectura | MVVM (`ObservableObject` + Combine) |
-| Autenticación | Firebase Authentication (correo/contraseña) |
-| Base de datos | Cloud Firestore (sincronización en tiempo real con *snapshot listeners*) |
-| Notificaciones | UserNotifications (notificaciones locales) |
-| Imágenes | Almacenamiento local en el dispositivo (`Documents/ClientImages`) |
-| Dependencias | Swift Package Manager — [firebase-ios-sdk](https://github.com/firebase/firebase-ios-sdk) 12.15+ |
+| Architecture | MVVM (`ObservableObject` + Combine) |
+| Authentication | Firebase Authentication (email/password) |
+| Database | Cloud Firestore (real-time sync with snapshot listeners) |
+| Notifications | UserNotifications (local notifications) |
+| Images | On-device local storage (`Documents/ClientImages`) |
+| Dependencies | Swift Package Manager — [firebase-ios-sdk](https://github.com/firebase/firebase-ios-sdk) 12.15+ |
 
 ---
 
-## 📁 Estructura del proyecto
+## 📁 Project structure
 
 ```
 AgendaGPS/
 └── AgendaGPS/
-    ├── App/            # Punto de entrada (AgendaGPSApp) y configuración de Firebase
+    ├── App/            # Entry point (AgendaGPSApp) and Firebase setup
     ├── Models/         # Client, Appointment
     ├── ViewModels/     # AuthViewModel, ClientsViewModel, AppointmentsViewModel
-    ├── Views/          # Pantallas SwiftUI (Dashboard, Agenda, Clientas, Fidelidad, Perfil…)
+    ├── Views/          # SwiftUI screens (Dashboard, Agenda, Clients, Loyalty, Profile…)
     └── Utils/          # Theme, NotificationManager, ImageStorageManager
 ```
 
-### Modelo de datos (Firestore)
+### Data model (Firestore)
 
 **`clients`**
 
-| Campo | Tipo | Descripción |
+| Field | Type | Description |
 |---|---|---|
-| `name` | String | Nombre de la clienta |
-| `phoneNumber` | String | Teléfono (usado para WhatsApp) |
-| `email` | String? | Correo electrónico |
-| `notes` | String? | Notas |
-| `imageUrl` | String? | Nombre del archivo de la foto guardada localmente |
-| `birthday` | Date? | Fecha de cumpleaños |
-| `loyaltyStamps` | Int? | Sellos de fidelidad (0–6) |
+| `name` | String | Client's name |
+| `phoneNumber` | String | Phone number (used for WhatsApp) |
+| `email` | String? | Email address |
+| `notes` | String? | Notes |
+| `imageUrl` | String? | File name of the locally stored photo |
+| `birthday` | Date? | Birthday |
+| `loyaltyStamps` | Int? | Loyalty stamps (0–6) |
 
 **`appointments`**
 
-| Campo | Tipo | Descripción |
+| Field | Type | Description |
 |---|---|---|
-| `clientId` | String | ID de la clienta |
-| `clientName` | String | Nombre de la clienta (desnormalizado) |
-| `clientPhone` | String? | Teléfono de la clienta |
-| `serviceName` | String | Servicio |
-| `price` | Double | Precio |
-| `date` | Date | Fecha y hora |
-| `notes` | String? | Notas |
+| `clientId` | String | Client ID |
+| `clientName` | String | Client's name (denormalized) |
+| `clientPhone` | String? | Client's phone number |
+| `serviceName` | String | Service |
+| `price` | Double | Price |
+| `date` | Date | Date and time |
+| `notes` | String? | Notes |
 
 ---
 
-## 🚀 Cómo ejecutar el proyecto
+## 🚀 Getting started
 
-### Requisitos
-- macOS con **Xcode 26** o superior
-- iOS **26.5+** (simulador o dispositivo)
-- Un proyecto de [Firebase](https://console.firebase.google.com/)
+### Requirements
+- macOS with **Xcode 26** or later
+- iOS **26.5+** (simulator or device)
+- A [Firebase](https://console.firebase.google.com/) project
 
-### Pasos
+### Steps
 
-1. **Clona el repositorio**
+1. **Clone the repository**
    ```bash
    git clone https://github.com/luis-delira/AgendaGPS.git
    ```
 
-2. **Configura Firebase**
-   - Crea un proyecto en Firebase y agrega una app iOS con el *bundle identifier* del proyecto.
-   - En **Authentication**, habilita el proveedor **Correo electrónico/contraseña**.
-   - Crea una base de datos **Cloud Firestore**.
-   - Descarga tu `GoogleService-Info.plist` y colócalo en `AgendaGPS/AgendaGPS/App/`.
+2. **Set up Firebase**
+   - Create a Firebase project and add an iOS app using the project's bundle identifier.
+   - In **Authentication**, enable the **Email/Password** provider.
+   - Create a **Cloud Firestore** database.
+   - Download your `GoogleService-Info.plist` and place it in `AgendaGPS/AgendaGPS/App/`.
 
-3. **Abre el proyecto en Xcode**
+3. **Open the project in Xcode**
    ```bash
    open AgendaGPS/AgendaGPS.xcodeproj
    ```
-   Xcode descargará automáticamente las dependencias de Firebase con Swift Package Manager.
+   Xcode will automatically fetch the Firebase dependencies through Swift Package Manager.
 
-4. **Ejecuta** la app con `⌘R` en un simulador o en tu iPhone. Acepta el permiso de notificaciones para recibir los recordatorios.
-
----
-
-## 🗺️ Próximas mejoras
-
-- [ ] Separar los datos por usuario en Firestore (`users/{uid}/clients`, `users/{uid}/appointments`) y agregar reglas de seguridad.
-- [ ] Sincronizar las fotos de las clientas entre dispositivos.
-- [ ] Reportes de ganancias semanales y mensuales.
-- [ ] Catálogo de servicios con precios predefinidos.
+4. **Run** the app with `⌘R` on a simulator or your iPhone. Allow notifications to receive reminders.
 
 ---
 
-## 👨‍💻 Autor
+## 🗺️ Roadmap
+
+- [ ] Scope data per user in Firestore (`users/{uid}/clients`, `users/{uid}/appointments`) and add security rules.
+- [ ] Sync client photos across devices.
+- [ ] Weekly and monthly earnings reports.
+- [ ] Service catalog with preset prices.
+
+---
+
+## 👨‍💻 Author
 
 **Luis De Lira**
 
-¿Sugerencias o comentarios? Abre un *issue* o envía un *pull request*. 💖
+Suggestions or feedback? Open an issue or send a pull request. 💖

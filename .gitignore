@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Xcode — datos de usuario y builds
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Firebase — cada desarrollador usa su propio archivo
+GoogleService-Info.plist
